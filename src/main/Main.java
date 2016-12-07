@@ -40,9 +40,9 @@ public class Main extends Application {
 		gameScreen = new GameScreen();
 		this.gameScene = new Scene(gameScreen);
 		gameScreen.requestFocus();
-		//GameloopUtility.runGameloop();
+		GameloopUtility.runGameloop();
 		this.primaryStage.setScene(gameScene);
-		gameScreen.paintComponent();
+		//gameScreen.paintComponent();
 		this.primaryStage.show();
 
 		

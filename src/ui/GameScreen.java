@@ -19,7 +19,9 @@ public class GameScreen extends StackPane {
 	public GameScreen() {
 		// TODO Auto-generated constructor stub
 		super();
-		this.canvas = new Canvas(800, 600);
+
+		this.canvas = new Canvas(1600, 900);
+		this.getChildren().add(this.canvas);
 		HangmanUtility.randomWord();
 
 		this.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -28,7 +30,8 @@ public class GameScreen extends StackPane {
 				System.out.println("KeyPressed : " + event.getCode().toString());
 				if (!InputUtility.getKeyPressed(event.getCode())) {
 					InputUtility.setKeyTriggered(event.getCode(), true);
-					System.out.println("KeyTriggered : " + event.getCode().toString());
+					HangmanUtility.update(event.getCode().toString().charAt(0));
+					System.out.println("KeyTriggered : " + event.getCode().toString().charAt(0));
 				}
 				InputUtility.setKeyPressed(event.getCode(), true);
 			}
@@ -47,11 +50,15 @@ public class GameScreen extends StackPane {
 	public void paintComponent() {
 		GraphicsContext gc = this.canvas.getGraphicsContext2D();
 		gc.setFill(Color.BLACK);
-		gc.fillRect(0, 0, 800, 400);
+		gc.fillRect(0, 500, 1600, 400);
 		gc.setFill(Color.WHITE);
 		gc.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
 		String line = HangmanUtility.getLine();
-		gc.fillText(line, 400, 300);
+		gc.fillText(line, 300, 600);
+		String used=HangmanUtility.getUsedChars();
+		gc.fillText(used, 300, 700);
+		String wrongs=HangmanUtility.getWrongChars();
+		gc.fillText(wrongs, 300, 800);
 	}
 
 }
