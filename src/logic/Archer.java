@@ -3,10 +3,12 @@ package logic;
 import java.util.List;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import lib.*;
 
 public class Archer extends Character {
-
+	Image archerImage=DrawingUtility.archer;
+	
 	public Archer(int x, int archerClass, int team) {
 		// TODO Auto-generated constructor stub
 		super(x, team);
@@ -14,7 +16,7 @@ public class Archer extends Character {
 		this.damage = 20 + 5 * archerClass;
 		this.towerDamage = 2;
 		this.armor = 5 + 2 * archerClass;
-		this.attackRange = 300;
+		this.attackRange = 350;
 	}
 
 
@@ -36,7 +38,7 @@ public class Archer extends Character {
 	@Override
 	public void render(GraphicsContext gc) {
 		// TODO Auto-generated method stub
-		
+		gc.drawImage(archerImage, x, y,100,100);
 	}
 
 

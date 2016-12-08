@@ -9,11 +9,16 @@ import ui.GameScreen;
 
 public class Castle extends Entity implements Attackable{
 	Image castleImage=null;
+	private int team;
 
-	public Castle() {
+	public Castle(int x,int team) {
 		// TODO Auto-generated constructor stub
-		super(0,GameScreen.BACKGROUND_HEIGHT+GameScreen.UPPER_UI_HEIGHT);
+		super(x,GameScreen.BACKGROUND_HEIGHT+GameScreen.UPPER_UI_HEIGHT);
+		this.team=team;
 		castleImage=DrawingUtility.castle;
+		
+		PlayerStatus.getInstance().addAndSort(this);
+		
 		
 	}
 	
@@ -49,7 +54,7 @@ public class Castle extends Entity implements Attackable{
 	@Override
 	public void render(GraphicsContext gc) {
 		// TODO Auto-generated method stub
-		gc.drawImage(castleImage, 50, GameScreen.UPPER_UI_HEIGHT+GameScreen.BACKGROUND_HEIGHT-400);
+		gc.drawImage(castleImage, x, GameScreen.UPPER_UI_HEIGHT+GameScreen.BACKGROUND_HEIGHT-400);
 		
 	}
 
@@ -57,6 +62,12 @@ public class Castle extends Entity implements Attackable{
 	public void decreaseLife(int damage) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public int getTeam() {
+		// TODO Auto-generated method stub
+		return team;
 	}
 
 }

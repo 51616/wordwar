@@ -1,9 +1,12 @@
 package logic;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import lib.DrawingUtility;
 
 public class Mage extends Character {
-
+	Image mageImage=DrawingUtility.mage;
+	
 	public Mage(int x, int mageClass,int team) {
 		// TODO Auto-generated constructor stub
 		super(x,team);
@@ -11,7 +14,7 @@ public class Mage extends Character {
 		this.damage=30+5*mageClass;
 		this.towerDamage=1;
 		this.armor=2+2*mageClass;
-		this.attackRange=200;
+		this.attackRange=250;
 	}
 
 
@@ -19,6 +22,7 @@ public class Mage extends Character {
 	public void update() {
 		// TODO Auto-generated method stub
 		if (!this.isDestroyed) {
+			this.move();
 			if (isMoving) {
 				
 			} else if (isAttacking) {
@@ -32,7 +36,7 @@ public class Mage extends Character {
 	@Override
 	public void render(GraphicsContext gc) {
 		// TODO Auto-generated method stub
-		
+		gc.drawImage(mageImage, x, y,100,100);
 	}
 
 }

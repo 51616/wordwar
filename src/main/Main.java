@@ -17,7 +17,7 @@ public class Main extends Application {
 	private Stage primaryStage;
 	//private Scene configScene;
 	private Scene gameScene;
-	//private MainLogic gameLogic;
+	private MainLogic gameLogic;
 	private GameScreen gameScreen;
 	private PlayerStatus player;
 	
@@ -41,21 +41,18 @@ public class Main extends Application {
 			}
 		});
 		
-		//this.gameLogic = new MainLogic();
-		player=new PlayerStatus(3);
+		this.gameLogic = new MainLogic();
+		this.gameLogic.onStart(3);
+		//player=new PlayerStatus(3);
 		
 		gameScreen = new GameScreen();
 		this.gameScene = new Scene(gameScreen);
 		gameScreen.requestFocus();
-		GameloopUtility.runGameloop();
-
+		GameloopUtility.runGameloop(gameLogic);
 
 		this.primaryStage.setScene(gameScene);
 		this.primaryStage.show();
-		/*drawGameScreen();
-		HangmanUtility.randomWord();
-		player.update();
-		drawGameScreen();*/
+
 		
 	}
 	

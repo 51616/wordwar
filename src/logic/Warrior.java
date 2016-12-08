@@ -39,7 +39,7 @@ public class Warrior extends Character {
 	@Override
 	public void render(GraphicsContext gc) {
 		// TODO Auto-generated method stub
-		gc.drawImage(warriorImage, x, y);
+		gc.drawImage(warriorImage, x, y,100,100);
 		
 	}
 

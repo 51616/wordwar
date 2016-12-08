@@ -20,6 +20,7 @@ public abstract class Entity implements IRenderable {
 		isMoving=false;
 		
 		IRenderableHolder.getInstance().addAndSort(this);
+		
 	}
 	
 	protected abstract void calculateNextState();

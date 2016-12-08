@@ -20,7 +20,7 @@ public abstract class Character extends Entity implements Moveable, Attackable {
 		// TODO Auto-generated constructor stub
 		super(x, GameScreen.UPPER_UI_HEIGHT + GameScreen.BACKGROUND_HEIGHT - DrawingUtility.MODEL_HEIGHT);
 		this.x = x;
-		speed = 10;
+		speed = 5;
 		isAttacking = false;
 		this.team = team;
 		nextY = y;
@@ -54,7 +54,7 @@ public abstract class Character extends Entity implements Moveable, Attackable {
 	@Override
 	public void decreaseLife(int damage) {
 		// TODO Auto-generated method stub
-		hp -= damage;
+		hp -= damage-armor;
 		if (hp <= 0) {
 			hp = 0;
 			isDestroyed = true;
@@ -93,15 +93,15 @@ public abstract class Character extends Entity implements Moveable, Attackable {
 			try {
 				Entity firstEnemy = ((Entity) enemies.get(0));
 				if (firstEnemy.getX() - this.x <= this.attackRange) {
-					System.out.println("ALLY NUMBER " + i + " REPORT ENEMY INRANGE");
+					//System.out.println("ALLY NUMBER " + i + " REPORT ENEMY INRANGE");
 					isMoving = false;
 					isAttacking = true;
-					// this.attack(enemies.get(0));
+					this.attack((Attackable)firstEnemy);
 					nextX = x;
 					return;
 				}
 			} catch (Exception e) {
-				System.out.println("No enemy found");
+				//System.out.println("No enemy found");
 			}
 
 			// System.out.println("ALLY Number : "+i+" ALLY X : " +this.x);
@@ -112,11 +112,11 @@ public abstract class Character extends Entity implements Moveable, Attackable {
 					isMoving = false;
 					isAttacking = false;
 					nextX=nextAlly.getX()-DrawingUtility.MODEL_WIDTH;
+					return;
 				}
 			} catch (Exception e) {
-				System.out.println("FIRST ALLY UNIT");
+				//System.out.println("FIRST ALLY UNIT");
 			}
-			
 			
 			isMoving = true;
 			isAttacking = false;
@@ -128,39 +128,30 @@ public abstract class Character extends Entity implements Moveable, Attackable {
 			try {
 				Entity firstAlly=(Entity) allies.get(allies.size() - 1);
 				if ( this.x - firstAlly.getX() <= this.attackRange) {
-					System.out.println("ALLY INRANGE");
+					//System.out.println("ALLY INRANGE");
 					isMoving = false;
 					isAttacking = true;
-					this.attack(allies.get(allies.size() - 1));
+					this.attack((Attackable)firstAlly);
 					nextX = x;
 					return;
 				}
 			} catch (Exception e) {
-				System.out.println("No ally unit found");
-			}
-
-			if (this.getX() - attackRange <= DrawingUtility.ALLIES_CASTLE) {
-				System.out.println("CASTLE");
-				isMoving = false;
-				isAttacking = true;
-				nextX = DrawingUtility.ALLIES_CASTLE + this.attackRange;
-				return;
-
+				//System.out.println("No ally unit found");
 			}
 			try {
 				
 				Entity nextEnemy=(Entity) enemies.get(i - 1);
 
-				if (nextEnemy.isMoving 
-						&& nextEnemy.getX() + DrawingUtility.MODEL_WIDTH < this.getX() - speed) {
-					System.out.println("stop next");
-					isMoving = true;
+				if (!nextEnemy.isMoving 
+						&& nextEnemy.getX() + DrawingUtility.MODEL_WIDTH > this.getX() - speed) {
+					//System.out.println("stop next");
+					isMoving = false;
 					isAttacking = false;
 					nextX = nextEnemy.getX() + DrawingUtility.MODEL_WIDTH;
 					return;
 				}
 			} catch (Exception e) {
-				System.out.println("First Enemy Unit");
+				//System.out.println("First Enemy Unit");
 			}
 			
 			

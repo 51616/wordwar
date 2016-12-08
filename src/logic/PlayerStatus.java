@@ -24,6 +24,7 @@ import ui.GameScreen;
 public class PlayerStatus implements IRenderable {
 	Castle castle;
 	public static final int EASY_LEVEL = 1, MEDIUM_LEVEL = 2, HARD_LEVEL = 3;
+	public static final int WAR_PRICE = 15, ARCH_PRICE = 20, MAGE_PRICE = 30;
 	private int gold, goldBonus, goldPenalty;
 	private int life;
 	private List<Attackable> allies = new ArrayList<Attackable>();
@@ -44,7 +45,7 @@ public class PlayerStatus implements IRenderable {
 
 		
 		this.level = level;
-		this.castle=new Castle();
+		//this.castle=new Castle(50,Character.ALLIES);
 		castleAvailable = true;
 		warriorClass = 1;
 		archerClass = 1;
@@ -54,7 +55,7 @@ public class PlayerStatus implements IRenderable {
 		archerExp = 0;
 		mageExp = 0;
 
-		gold = 10;
+		gold = 100;
 		life = 100;
 
 		goldBonus = 9 - level;
@@ -74,15 +75,14 @@ public class PlayerStatus implements IRenderable {
 
 		instance = this;
 		IRenderableHolder.getInstance().addAndSort(this);
-		//new Warrior(1300,1,Character.ENEMIES);
-		//new Warrior(1600,1,Character.ENEMIES);
+
 	}
 
 	public void setLine(String line) {
 		this.line = line;
 	}
 
-	public void addAndSort(Character c) {
+	public void addAndSort(Attackable c) {
 		if (c.getTeam() == Character.ALLIES)
 			allies.add(c);
 		else
@@ -102,6 +102,15 @@ public class PlayerStatus implements IRenderable {
 
 	public void decreaseGold() {
 		gold -= goldPenalty;
+
+	}
+	
+	public boolean buy(int price) {
+		if (gold>=price) {
+			gold-=price;
+			return true;
+		}
+		return false;
 
 	}
 

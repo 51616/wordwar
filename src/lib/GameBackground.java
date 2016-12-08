@@ -15,7 +15,7 @@ public class GameBackground implements IRenderable {
 	@Override
 	public void render(GraphicsContext gc) {
 		// TODO Auto-generated method stub
-		gc.drawImage(bgImage, 50, GameScreen.UPPER_UI_HEIGHT+20, 1500, GameScreen.BACKGROUND_HEIGHT);
+		gc.drawImage(bgImage, 50, GameScreen.UPPER_UI_HEIGHT, 1500, GameScreen.BACKGROUND_HEIGHT);
 	}
 
 	@Override
