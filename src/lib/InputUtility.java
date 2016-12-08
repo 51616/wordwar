@@ -9,6 +9,7 @@ public class InputUtility {
 	private static ArrayList<KeyCode> keyPressed = new ArrayList<>();
 	private static ArrayList<KeyCode> keyTriggered = new ArrayList<>();
 
+
 	public static boolean getKeyPressed(KeyCode keycode) {
 		if (keyPressed.contains(keycode))
 			return true;
@@ -43,5 +44,9 @@ public class InputUtility {
 	public static void postUpdate() {
 		keyTriggered = new ArrayList<KeyCode>();
 
+	}
+
+	public static ArrayList<KeyCode> getKeyTriggered() {
+		return keyTriggered;
 	}
 }

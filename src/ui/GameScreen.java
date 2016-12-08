@@ -9,11 +9,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import lib.HangmanUtility;
+import lib.IRenderable;
+import lib.IRenderableHolder;
 import lib.InputUtility;
 
 public class GameScreen extends StackPane {
 
-	public static final int UNDER_UI_HEIGHT = 300, BACKGROUND_HEIGHT = 250, UPPER_UI_HEIGHT = 70;
+	public static final int UNDER_UI_HEIGHT = 300, BACKGROUND_HEIGHT = 500, UPPER_UI_HEIGHT = 100;
 	private Canvas canvas;
 
 	public GameScreen() {
@@ -22,7 +24,7 @@ public class GameScreen extends StackPane {
 
 		this.canvas = new Canvas(1600, 900);
 		this.getChildren().add(this.canvas);
-		HangmanUtility.randomWord();
+		
 
 		this.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
@@ -30,7 +32,7 @@ public class GameScreen extends StackPane {
 				System.out.println("KeyPressed : " + event.getCode().toString());
 				if (!InputUtility.getKeyPressed(event.getCode())) {
 					InputUtility.setKeyTriggered(event.getCode(), true);
-					HangmanUtility.update(event.getCode().toString().charAt(0));
+					//HangmanUtility.update(event.getCode().toString());
 					System.out.println("KeyTriggered : " + event.getCode().toString().charAt(0));
 				}
 				InputUtility.setKeyPressed(event.getCode(), true);
@@ -49,8 +51,10 @@ public class GameScreen extends StackPane {
 
 	public void paintComponent() {
 		GraphicsContext gc = this.canvas.getGraphicsContext2D();
-		gc.setFill(Color.BLACK);
+		/*gc.setFill(Color.BLACK);
 		gc.fillRect(0, 500, 1600, 400);
+		gc.fillRect(0, 0, 1600, UPPER_UI_HEIGHT);
+		
 		gc.setFill(Color.WHITE);
 		gc.setFont(Font.font("Tahoma", FontWeight.BOLD, 30));
 		String line = HangmanUtility.getLine();
@@ -58,7 +62,15 @@ public class GameScreen extends StackPane {
 		String used=HangmanUtility.getUsedChars();
 		gc.fillText(used, 300, 700);
 		String wrongs=HangmanUtility.getWrongChars();
-		gc.fillText(wrongs, 300, 800);
+		gc.fillText(wrongs, 300, 800);*/
+		
+		gc.setFill(Color.BLACK);
+		gc.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
+		gc.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
+		for(IRenderable renderable : IRenderableHolder.getInstance().getEntities()){
+			renderable.render(gc);
+		}
+		
 	}
 
 }

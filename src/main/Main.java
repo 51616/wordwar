@@ -5,7 +5,10 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+
 import lib.*;
+import logic.MainLogic;
+import logic.PlayerStatus;
 import ui.GameScreen;
 
 public class Main extends Application {
@@ -16,6 +19,7 @@ public class Main extends Application {
 	private Scene gameScene;
 	//private MainLogic gameLogic;
 	private GameScreen gameScreen;
+	private PlayerStatus player;
 	
 	private boolean isGameSceneShown = false;
 	
@@ -37,14 +41,21 @@ public class Main extends Application {
 			}
 		});
 		
+		//this.gameLogic = new MainLogic();
+		player=new PlayerStatus(3);
+		
 		gameScreen = new GameScreen();
 		this.gameScene = new Scene(gameScreen);
 		gameScreen.requestFocus();
 		GameloopUtility.runGameloop();
-		this.primaryStage.setScene(gameScene);
-		//gameScreen.paintComponent();
-		this.primaryStage.show();
 
+
+		this.primaryStage.setScene(gameScene);
+		this.primaryStage.show();
+		/*drawGameScreen();
+		HangmanUtility.randomWord();
+		player.update();
+		drawGameScreen();*/
 		
 	}
 	

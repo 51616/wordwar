@@ -1,5 +1,7 @@
 package logic;
 
+import javafx.scene.canvas.GraphicsContext;
+
 public class Balloon extends Entity implements Moveable {
 
 	public Balloon() {
@@ -20,6 +22,12 @@ public class Balloon extends Entity implements Moveable {
 
 	@Override
 	public void update() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void render(GraphicsContext gc) {
 		// TODO Auto-generated method stub
 		
 	}

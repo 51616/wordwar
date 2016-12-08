@@ -2,6 +2,9 @@ package lib;
 
 import java.util.Scanner;
 
+import javafx.scene.input.KeyCode;
+import logic.PlayerStatus;
+
 public class HangmanUtility {
 	private static String[] wordList = { "computer", "java", "activity", "alaska", "appearance", "javatar",
 			"automobile", "falafel", "birthday", "canada", "central", "character", "chicken", "chosen", "cutting",
@@ -16,6 +19,7 @@ public class HangmanUtility {
 	private static String line;
 	private static String usedChars, wrongChars;
 	private static int correct, wrong;
+	private static boolean wait = false;
 
 	public HangmanUtility() {
 
@@ -69,42 +73,53 @@ public class HangmanUtility {
 
 	}
 
-	public static void update(char c) {
-		if (!usedChars.contains(c + "")) {
-			if (CurrentWord.toUpperCase().contains(c + "")) {
-				char[] charArray = line.toCharArray();
-				int i = 0;
-				for (i = 0; i < CurrentWord.length(); i++) {
-					if (CurrentWord.toUpperCase().charAt(i) == c) {
-						charArray[3 * i] = ' ';
-						charArray[3 * i + 1] = c;
-						correct++;
-					}
-				}
-				line = new String(charArray);
-				System.out.println(line);
-			} else if (!wrongChars.contains(c+"")) {
-				wrongChars += c;
-				wrong++;
-			}
-			usedChars += c;
-		}
-		
-		if (correct == CurrentWord.length()) {
-			Thread t=new Thread(new Runnable(){
-				
-				public void run() {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				HangmanUtility.randomWord();
-				}
-			});
-			t.start();
+	public static void update() {
+		String s = new String();
+		if (InputUtility.getKeyTriggered().size() > 0) {
+			s = InputUtility.getKeyTriggered().get(0).toString();
 
+			if (s.length() == 1 && !wait) {
+				char c = s.charAt(0);
+				if (!usedChars.contains(c + "")) {
+					if (CurrentWord.toUpperCase().contains(c + "")) {
+						char[] charArray = line.toCharArray();
+						int i = 0;
+						for (i = 0; i < CurrentWord.length(); i++) {
+							if (CurrentWord.toUpperCase().charAt(i) == c) {
+								charArray[3 * i] = ' ';
+								charArray[3 * i + 1] = c;
+								correct++;
+								PlayerStatus.getInstance().increaseGold();
+							}
+						}
+						line = new String(charArray);
+						System.out.println(line);
+					} else if (!wrongChars.contains(c + "")) {
+						wrongChars += c;
+						wrong++;
+						PlayerStatus.instance.wrongGuess();
+					}
+					usedChars += c;
+				}
+
+				if (correct == CurrentWord.length()) {
+					wait = true;
+					Thread t = new Thread(new Runnable() {
+
+						public void run() {
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							HangmanUtility.randomWord();
+							wait = false;
+						}
+					});
+					t.start();
+				}
+			} 
 		}
 	}
 

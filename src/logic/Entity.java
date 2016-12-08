@@ -10,18 +10,21 @@ public abstract class Entity implements IRenderable {
 	protected boolean isDestroyed,isAttacking,isMoving;
 	
 
-	public Entity(int x,int y,int z) {
+	public Entity(int x,int y) {
 		// TODO Auto-generated constructor stub
 		this.x=x;
 		this.y=y;
-		this.z=z;
+		this.z=1;
 		isDestroyed=false;
 		isAttacking=false;
 		isMoving=false;
+		
+		IRenderableHolder.getInstance().addAndSort(this);
 	}
 	
 	protected abstract void calculateNextState();
 	public abstract void update();
+	
 	
 	
 
