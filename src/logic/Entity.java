@@ -4,17 +4,21 @@ import lib.*;
 
 public abstract class Entity implements IRenderable {
 	
-	protected int x,y,z;
-	protected int nextX,nextY;
-	protected int direction,speed;
+	protected double x,y;
+	protected int z;
+	protected double nextX,nextY;
+	protected int direction;
+	protected double speed;
 	protected boolean isDestroyed,isAttacking,isMoving;
 	
 
-	public Entity(int x,int y) {
+	public Entity(double x,double y) {
 		// TODO Auto-generated constructor stub
 		this.x=x;
 		this.y=y;
 		this.z=1;
+		nextX=x;
+		nextY=y;
 		isDestroyed=false;
 		isAttacking=false;
 		isMoving=false;
@@ -29,11 +33,11 @@ public abstract class Entity implements IRenderable {
 	
 	
 
-	public int getX() {
+	public double getX() {
 		return x;
 	}
 
-	public int getY() {
+	public double getY() {
 		return y;
 	}
 

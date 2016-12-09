@@ -10,6 +10,7 @@ import lib.GameBackground;
 
 import lib.IRenderableHolder;
 import lib.InputUtility;
+import ui.GameScreen;
 
 public class MainLogic {
 	private GameBackground background;
@@ -20,11 +21,14 @@ public class MainLogic {
 
 	public synchronized void onStart(int level) {
 		background = new GameBackground();
+		//Castle castle=new Castle(DrawingUtility.ALLIES_CASTLE, Character.ALLIES);
 		player = new PlayerStatus(level);
-		onScreenEntity.add(new Castle(50, Character.ALLIES));
-		onScreenEntity.add(new Castle(1500, Character.ENEMIES));
+		onScreenEntity.add(new Castle(DrawingUtility.ALLIES_CASTLE, Character.ALLIES));
+		onScreenEntity.add(new Castle(DrawingUtility.ENEMIES_CASTLE, Character.ENEMIES));
 		onScreenEntity.add(new Warrior(1000, PlayerStatus.getInstance().getMageClass(), Character.ENEMIES));
-		onScreenEntity.add(new Warrior(1300, PlayerStatus.getInstance().getMageClass(), Character.ENEMIES));
+		onScreenEntity.add(new Warrior(1400, PlayerStatus.getInstance().getMageClass(), Character.ENEMIES));
+		onScreenEntity.add(new Balloon(DrawingUtility.SCREEN_WIDTH/2,GameScreen.UPPER_UI_HEIGHT+20));
+		
 	}
 
 	public synchronized void onExit() {
@@ -32,8 +36,12 @@ public class MainLogic {
 	}
 
 	public void logicUpdate() {
+		
+		if (player.getEnemies().size()<player.getLevel()) {
+			
+		}
 
-		if (InputUtility.getKeyTriggered().size() > 0) {
+		if (player.isCastleAvailable() && InputUtility.getKeyTriggered().size() > 0) {
 			if (InputUtility.getKeyTriggered().get(0) == KeyCode.NUMPAD1
 					|| InputUtility.getKeyTriggered().get(0) == KeyCode.DIGIT1) {
 				if (player.buy(player.WAR_PRICE)) {
@@ -65,23 +73,28 @@ public class MainLogic {
 		// createTarget();
 
 		// Update target object
+		List<Projectile> toBeAdd=new ArrayList<Projectile>();
 		for (Entity e : onScreenEntity) {
+			if (e instanceof Archer || e instanceof Mage) {
+				Character shooter=(Character) e;
+				if (shooter.isAttacking()&& shooter.getCurrentFrame()==3 && shooter.getCurrentTick()==0 ) {
+					System.out.println("PROJECT");
+					toBeAdd.add(new Projectile(shooter));
+				}
+			}
 			e.update();
 		}
-
-		// Update animation
-		// for(GameAnimation obj : onScreenAnimation){
-		// obj.updateAnimation();
-		// }
-
-		// Remove unused image
+		
+		onScreenEntity.addAll(toBeAdd);
+		
+		List<Entity> toRemove = new ArrayList<Entity>();
 		for (int i = onScreenEntity.size() - 1; i >= 0; i--) {
 			if (onScreenEntity.get(i).isDestroyed)
-				onScreenEntity.remove(i);
+				toRemove.add(onScreenEntity.get(i));
 		}
 
-		List<Attackable> toRemove = new ArrayList<Attackable>();
-		for (Attackable c : player.getAllies()) {
+
+		/*for (Attackable c : player.getAllies()) {
 			if (((Entity) c).isDestroyed) {
 				toRemove.add(c);
 			}
@@ -91,8 +104,8 @@ public class MainLogic {
 			if (((Entity) c).isDestroyed) {
 				toRemove.add(c);
 			}
-		}
-
+		}*/
+		onScreenEntity.removeAll(toRemove);
 		player.getAllies().removeAll(toRemove);
 		player.getEnemies().removeAll(toRemove);
 		IRenderableHolder.getInstance().getEntities().removeAll(toRemove);
