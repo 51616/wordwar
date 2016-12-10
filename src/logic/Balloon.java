@@ -42,7 +42,7 @@ public class Balloon extends Entity implements Moveable {
 				direction *= -1;
 			}
 		} catch (Exception e) {
-			System.out.println("NO ALLY UNIT");
+			//System.out.println("NO ALLY UNIT");
 		}
 
 		try {
@@ -53,7 +53,7 @@ public class Balloon extends Entity implements Moveable {
 				direction *= -1;
 			}
 		} catch (Exception e) {
-			System.out.println("NO ALLY UNIT");
+			//System.out.println("NO ENEMY UNIT");
 		}
 		
 		nextX = x + speed * direction;

@@ -10,36 +10,33 @@ import logic.Character;
 public abstract class Character extends Entity implements Moveable, Attackable {
 	public static final int ALLIES = 1, ENEMIES = -1;
 	public static final int WARRIOR = 1, ARCHER = 2, MAGE = 3;
-	protected int hp,maxHp;
-	protected int damage, towerDamage, armor, attackRange;
+	protected int hp, maxHp;
+	protected int  armor, attackRange;
+	protected double damage,towerDamage;
 	protected int team;
-	public int getCurrentTick() {
-		return currentTick;
-	}
 
-	protected int lastFrame, currentFrame,lastAttackFrame;
-	protected int currentTick,AnimateTick;
+	protected boolean isDying;
+	protected int lastMovingFrame, currentFrame, lastAttackFrame, lastDyingFrame, lastCelebrationFrame;
+	protected int currentTick, AnimateTick;
 	protected int attackCounter, attackTime;
 
 	public Character(int x, int team) {
 		// TODO Auto-generated constructor stub
 		super(x, GameScreen.UPPER_UI_HEIGHT + GameScreen.BACKGROUND_HEIGHT - DrawingUtility.MODEL_HEIGHT);
 		this.x = x;
-		speed = 0.5;
-		isAttacking = false;
 		this.team = team;
-		nextY = y;
 		this.attackCounter = 0;
-		currentFrame=0;
-		currentTick=0;
-		lastFrame=7;
-		lastAttackFrame=5;
-		AnimateTick=5;
+		speed = 0.5;
+		currentFrame = 0;
+		currentTick = 0;
+		lastCelebrationFrame=8;
+		lastMovingFrame = 7;
+		lastAttackFrame = 5;
+		lastDyingFrame = 5;
+		AnimateTick = 5;
 
 		PlayerStatus.getInstance().addAndSort(this);
 	}
-
-	// public abstract boolean isCollide(Item i);
 
 	public boolean isTeamWith(Character c) {
 		if (c.getTeam() == this.getTeam())
@@ -63,22 +60,24 @@ public abstract class Character extends Entity implements Moveable, Attackable {
 	}
 
 	@Override
-	public void decreaseLife(int damage) {
+	public void decreaseLife(double damage) {
 		// TODO Auto-generated method stub
 		hp -= damage - armor;
 		if (hp <= 0) {
 			hp = 0;
-			isDestroyed = true;
+			isDying = true;
 			isMoving = false;
 			isAttacking = false;
+			currentFrame = 0;
+			PlayerStatus.getInstance().remove(this);
 		}
-		System.out.println(hp);
 
 	}
 
 	public void move() {
 
-		if (!this.isDestroyed) {
+		if (!this.isDestroyed && PlayerStatus.getInstance().isPlaying()) {
+
 			this.calculateNextState();
 			this.x = this.nextX;
 			this.y = this.nextY;
@@ -86,10 +85,90 @@ public abstract class Character extends Entity implements Moveable, Attackable {
 
 	}
 
+	public void update() {
+		// TODO Auto-generated method stub
+		if (!this.isDestroyed) {
+			this.move();
+			if (currentTick == AnimateTick) {
+				if (!PlayerStatus.getInstance().isPlaying()) {
+					if (!isDying&& 
+							(this.getTeam()==Character.ALLIES && PlayerStatus.getInstance().isDefeated()
+							||this.getTeam()==Character.ENEMIES && PlayerStatus.getInstance().hasWon()) ) {
+						this.isDying=true;
+						isAttacking=false;
+						isMoving=false;
+						this.hp=0;
+						return;
+					}
+					else if (isAttacking || isMoving) {
+						isAttacking=false;
+						isMoving=false;
+						currentFrame=0;
+					} else if (isDying) {
+						if (currentFrame == lastDyingFrame) {
+							isDestroyed = true;
+						}
+						currentFrame++;
+						currentTick = 0;
+						return;
+					}
+					else if (currentFrame == lastCelebrationFrame) {
+						currentFrame = 0;
+					}
+					currentFrame++;
+					currentTick = 0;
+					return;
+				}
+				
+				else if (isMoving) {
+					if (currentFrame == lastMovingFrame) {
+						currentFrame = 0;
+					}
+					currentFrame++;
+					currentTick = 0;
+					return;
+
+				} else if (isAttacking) {
+					if (currentFrame == lastAttackFrame) {
+						currentFrame = 0;
+					}
+
+					currentFrame++;
+					currentTick = 0;
+					return;
+				} else if (isDying) {
+					if (currentFrame == lastDyingFrame) {
+						isDestroyed = true;
+					}
+
+					currentFrame++;
+					currentTick = 0;
+					return;
+				}  else {
+					currentFrame = 0;
+				}
+			} else {
+				currentTick++;
+			}
+		}
+	}
+
 	protected abstract void calculateNextState();
 
 	public int getCurrentFrame() {
 		return currentFrame;
+	}
+
+	public int getCurrentTick() {
+		return currentTick;
+	}
+	
+	public int getModelWidth() {
+		return DrawingUtility.MODEL_WIDTH;
+	}
+	
+	public int getHitBox() {
+		return DrawingUtility.CHARACTER_HITBOX_WIDTH;
 	}
 
 }

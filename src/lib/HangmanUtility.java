@@ -119,7 +119,7 @@ public class HangmanUtility {
 					});
 					t.start();
 				}
-			} 
+			}
 		}
 	}
 
