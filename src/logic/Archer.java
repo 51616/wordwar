@@ -2,124 +2,172 @@ package logic;
 
 import java.util.List;
 
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import lib.*;
+import logic.Character;
 
 public class Archer extends Character {
+	private static List<Image> archerWalk = DrawingUtility.archerWalk;
+	private static List<Image> archerAtk = DrawingUtility.archerAtk;
+	private static List<Image> archerDying = DrawingUtility.archerDying;
+	private static List<Image> archerWon = DrawingUtility.archerWon;
 
 	public Archer(int x, int archerClass, int team) {
 		// TODO Auto-generated constructor stub
 		super(x, team);
-		this.hp = 100 + 10 * archerClass;
-		this.damage = 20 + 5 * archerClass;
-		this.towerDamage = 2;
-		this.armor = 5 + 2 * archerClass;
+		this.maxHp = 90 + 10 * archerClass;
+		this.hp = maxHp;
+		this.damage = 10 + 5 * archerClass;
+		this.towerDamage = 1;
+		this.armor = 4 + 2 * archerClass;
 		this.attackRange = 100;
+		// AnimateTick=10;
+		// this.attackTime = 200;
+	}
+
+	public double getHpRatio() {
+		return (double) hp / (double) maxHp;
 	}
 
 	@Override
 	protected void calculateNextState() {
 		// TODO Auto-generated method stub
-		List<Character> allies = PlayerStatus.instance.getAllies();
-		List<Character> enemies = PlayerStatus.instance.getEnemies();
+		if (!isDying) {
+			List<Attackable> allies = PlayerStatus.instance.getAllies();
+			List<Attackable> enemies = PlayerStatus.instance.getEnemies();
+			// System.out.println(allies.get(0).getX());
 
-		if (this.getTeam() == Character.ALLIES) {
-			int i = allies.indexOf(this);
+			if (this.getTeam() == Character.ALLIES) {
 
-			if (enemies.get(0).getX() - this.x <= this.attackRange) {
-				isMoving = false;
-				isAttacking = true;
-				nextX = x;
-				return;
-			} else if (i < allies.size() - 1) {
-				if (!allies.get(i + 1).isMoving && allies.get(i + 1).getX() < this.getX()
-						+ DrawingUtility.MODEL_WIDTH + speed) {
-					isMoving = true;
-					isAttacking = false;
-					nextX = allies.get(i + 1).getX() - this.getX() - DrawingUtility.MODEL_WIDTH;
-					return;
+				try {
+					for (int i = 0; i < enemies.size(); i++) {
+						Attackable enemyUnit = enemies.get(i);
+
+						if ((((Entity) enemyUnit).getX() + enemyUnit.getModelWidth() - enemyUnit.getHitBox()
+								- (this.getX() + this.getModelWidth())) <= attackRange) {
+							if (!isAttacking) {
+								currentFrame = 0;
+							}
+							// System.out.println("ALLY INRANGE");
+							isMoving = false;
+							isAttacking = true;
+							nextX = x;
+
+							return;
+						}
+					}
+				} catch (Exception e) {
+					// System.out.println("No enemy found");
 				}
 
-			} else /* First ally to fight (Most right ally) */ {
-				if (enemies.size() == 0) {
-					if (this.getX() + speed >= DrawingUtility.ENEMIES_CASTLE) {
+				// System.out.println("ALLY Number : "+i+" ALLY X : " +this.x);
 
+				try {
+					int i = allies.indexOf(this);
+					Entity nextAlly = ((Entity) allies.get(i + 1));
+					if (nextAlly instanceof Character && !nextAlly.isMoving
+							&& nextAlly.getX() < this.getX() + DrawingUtility.MODEL_WIDTH + speed) {
 						isMoving = false;
-						isAttacking = true;
-						nextX = DrawingUtility.ENEMIES_CASTLE;
+						isAttacking = false;
+						nextX = nextAlly.getX() - DrawingUtility.MODEL_WIDTH;
 						return;
 					}
+				} catch (Exception e) {
+					// System.out.println("FIRST ALLY UNIT");
 				}
-			}
-			isMoving = true;
-			isAttacking = false;
-			nextX = x + speed;
 
-		} else {
-			int i = enemies.indexOf(this);
-			if (this.x - allies.get(allies.size() - 1).getX() <= this.attackRange) {
-				isMoving = false;
-				isAttacking = true;
-				nextX = x;
-				return;
-			}
+				isMoving = true;
+				isAttacking = false;
+				nextX = x + speed;
 
-			else if (i == 0) /* First enemy to fight (Most left enemy) */ {
-				if (allies.size() == 0) {
-					if (this.getX() - speed >= DrawingUtility.ALLIES_CASTLE) {
+			} else {
+				// System.out.println("ENEMY x : " + this.x);
+
+				try {
+					for (int i = allies.size() - 1; i >= 0; i--) {
+						Attackable allyUnit = allies.get(i);
+
+						if (this.getX() - (((Entity) allyUnit).getX() + allyUnit.getHitBox()) <= attackRange) {
+							if (!isAttacking) {
+								currentFrame = 0;
+							}
+							// System.out.println("ALLY INRANGE");
+							isMoving = false;
+							isAttacking = true;
+							nextX = x;
+
+							return;
+						}
+					}
+				} catch (Exception e) {
+					// System.out.println("No ally unit found");
+				}
+				try {
+					int i = enemies.indexOf(this);
+					Entity nextEnemy = (Entity) enemies.get(i - 1);
+
+					if (nextEnemy instanceof Character && !nextEnemy.isMoving
+							&& nextEnemy.getX() + DrawingUtility.MODEL_WIDTH > this.getX() - speed) {
+						// System.out.println("stop next");
 						isMoving = false;
-						isAttacking = true;
-						nextX = DrawingUtility.ALLIES_CASTLE;
+						isAttacking = false;
+						nextX = nextEnemy.getX() + DrawingUtility.MODEL_WIDTH;
 						return;
 					}
+				} catch (Exception e) {
+					// System.out.println("First Enemy Unit");
 				}
-			}else if (i > 0) {
-				if (!enemies.get(i - 1).isMoving && enemies.get(i - 1).getX()+DrawingUtility.MODEL_WIDTH 
-						< this.getX()- speed) {
-					isMoving = true;
-					isAttacking = false;
-					nextX = enemies.get(i - 1).getX()+DrawingUtility.MODEL_WIDTH;
-					return;
-				}
+
+				isMoving = true;
+				isAttacking = false;
+				nextX = x - speed;
 
 			}
-			
-			isMoving = true;
-			isAttacking = false;
-			nextX = x - speed;
-
 		}
-
 	}
 
 	@Override
-	public void update() {
+	public void render(GraphicsContext gc) {
 		// TODO Auto-generated method stub
-		if (!this.isDestroyed) {
+		gc.setFill(Color.WHITE);
+		gc.setStroke(Color.BLACK);
+		gc.setLineWidth(2);
+		if (this.team == Character.ALLIES) {
 			if (isAttacking) {
-				
+				gc.drawImage(archerAtk.get(currentFrame), x, y);
+			} else if (isDying) {
+				gc.drawImage(archerDying.get(currentFrame), x, y);
+			} else if (!PlayerStatus.getInstance().isPlaying()) {
+				gc.drawImage(archerWon.get(currentFrame), x, y);
+			} else {
+				gc.drawImage(archerWalk.get(currentFrame), x, y);
 			}
+
+			gc.fillRoundRect(x, y + 20, (DrawingUtility.MODEL_WIDTH * 0.6) * getHpRatio(), 10, 10, 10);
+			gc.strokeRoundRect(x, y + 20, (DrawingUtility.MODEL_WIDTH * 0.6) * getHpRatio(), 10, 10, 10);
+		} else {
+			if (isAttacking) {
+				gc.drawImage(archerAtk.get(currentFrame), x + DrawingUtility.MODEL_WIDTH, y,
+						-DrawingUtility.MODEL_WIDTH, DrawingUtility.MODEL_HEIGHT);
+			} else if (isDying) {
+				gc.drawImage(archerDying.get(currentFrame), x + DrawingUtility.MODEL_WIDTH, y,
+						-DrawingUtility.MODEL_WIDTH, DrawingUtility.MODEL_HEIGHT);
+			} else if (!PlayerStatus.getInstance().isPlaying()) {
+				gc.drawImage(archerWon.get(currentFrame), x + DrawingUtility.MODEL_WIDTH, y,
+						-DrawingUtility.MODEL_WIDTH, DrawingUtility.MODEL_HEIGHT);
+			}
+
+			else {
+				gc.drawImage(archerWalk.get(currentFrame), x + DrawingUtility.MODEL_WIDTH, y,
+						-DrawingUtility.MODEL_WIDTH, DrawingUtility.MODEL_HEIGHT);
+			}
+
+			gc.fillRoundRect(x + getModelWidth() - getHitBox(), y + 20, (DrawingUtility.MODEL_WIDTH * 0.6) * getHpRatio(), 10, 10, 10);
+			gc.strokeRoundRect(x + getModelWidth() - getHitBox(), y + 20, (DrawingUtility.MODEL_WIDTH * 0.6) * getHpRatio(), 10, 10, 10);
 		}
 
 	}
-	
-	public void decreaseHp(int damage) {
-		hp-=damage;
-		if (hp<=0)
-			hp=0;
-			isDestroyed=true;
-			isMoving=false;
-			isAttacking=false;
-	}
-
-	/*
-	 * @Override public boolean isCollide(Item i) { // TODO Auto-generated
-	 * method stub return this.getX() + DrawingUtility.MODEL_WIDTH >= ((Item)
-	 * i).getX() && this.getX() < ((Item) i).getX() && this.getY() +
-	 * DrawingUtility.MODEL_HEIGHT >= ((Item) i).getY() && this.getY() < ((Item)
-	 * i).getY() || ((Item) i).getX() + DrawingUtility.ITEM_WIDTH >= this.getX()
-	 * && ((Item) i).getX() < this.getX() && ((Item) i).getY() +
-	 * DrawingUtility.ITEM_HEIGTH >= this.getY() && ((Item) i).getY() <
-	 * this.getY(); }
-	 */
 
 }

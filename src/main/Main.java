@@ -5,8 +5,11 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+
 import lib.GameloopUtility;
 import logic.MainLogic;
+
+
 import ui.GameScreen;
 import ui.HowtoScreen;
 import ui.MenuScreen;
@@ -17,11 +20,13 @@ public class Main extends Application {
 	private Stage primaryStage;
 	private Scene menuScene;
 	private Scene gameScene;
+
 	private Scene howToScene;
 	private MainLogic gameLogic;
 	private GameScreen gameScreen;
 	private MenuScreen menuScreen;
 	private HowtoScreen howtoScreen;
+
 	public static void main(String[] args) {
 		Application.launch(args);
 	}
@@ -48,6 +53,7 @@ public class Main extends Application {
 		howtoScreen = new HowtoScreen();
 		howToScene = new Scene(howtoScreen);
 		this.primaryStage.setScene(menuScene);
+
 		this.primaryStage.show();
 		
 		
