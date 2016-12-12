@@ -6,23 +6,27 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import lib.*;
+import lib.GameloopUtility;
 import logic.MainLogic;
-import logic.PlayerStatus;
+
+
 import ui.GameScreen;
+import ui.HowtoScreen;
+import ui.MenuScreen;
 
 public class Main extends Application {
 	public static Main instance;
 	
 	private Stage primaryStage;
-	//private Scene configScene;
+	private Scene menuScene;
 	private Scene gameScene;
+
+	private Scene howToScene;
 	private MainLogic gameLogic;
 	private GameScreen gameScreen;
-	private PlayerStatus player;
-	
-	private boolean isGameSceneShown = false;
-	
+	private MenuScreen menuScreen;
+	private HowtoScreen howtoScreen;
+
 	public static void main(String[] args) {
 		Application.launch(args);
 	}
@@ -32,7 +36,9 @@ public class Main extends Application {
 		// TODO Auto-generated method stub
 		instance = this;
 		this.primaryStage = primaryStage;
-		this.primaryStage.setTitle("Hangman");
+		this.primaryStage.setTitle("Word Wars");
+		this.primaryStage.setWidth(1280);
+		this.primaryStage.setHeight(720);
 		this.primaryStage.setResizable(false);
 		this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
@@ -41,21 +47,32 @@ public class Main extends Application {
 			}
 		});
 		
-		this.gameLogic = new MainLogic();
-		this.gameLogic.onStart(3);
-		//player=new PlayerStatus(3);
+		menuScreen = new MenuScreen();
+		this.menuScene = new Scene(menuScreen);
 		
-		gameScreen = new GameScreen();
-		this.gameScene = new Scene(gameScreen);
-		gameScreen.requestFocus();
-		GameloopUtility.runGameloop(gameLogic);
+		howtoScreen = new HowtoScreen();
+		howToScene = new Scene(howtoScreen);
+		this.primaryStage.setScene(menuScene);
 
-		this.primaryStage.setScene(gameScene);
 		this.primaryStage.show();
-
+		
 		
 	}
-	
+	public void changeScreenTo(String screen,int level){
+		if (screen.equals("MenuScreen")){
+			this.primaryStage.setScene(menuScene);
+		} else if (screen.equals("HowToScreen")){
+			this.primaryStage.setScene(howToScene);
+		} else if (screen.equals("GameScreen")){
+			this.gameLogic = new MainLogic();
+			this.gameLogic.onStart(level);
+			gameScreen = new GameScreen();
+			this.gameScene = new Scene(gameScreen);
+			gameScreen.requestFocus();
+			GameloopUtility.runGameloop(gameLogic);
+			this.primaryStage.setScene(gameScene);
+		}
+	}
 	public void drawGameScreen(){
 		this.gameScreen.paintComponent();
 	}
